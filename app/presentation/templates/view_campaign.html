@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block title %}Campaña #{{ campaign.id }} - {{ campaign.company_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+
+    <!-- Notification Toast if Just Published -->
+    {% if published_just_now %}
+    <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 flex items-center justify-between shadow-lg shadow-emerald-500/10 animate-fade-in">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+                <h4 class="text-sm font-bold text-white">¡Video desplegado con éxito en TikTok!</h4>
+                <p class="text-xs text-slate-300">
+                    Se registró en la base de datos PostgreSQL con Publish ID: 
+                    <span class="font-mono text-emerald-300 font-bold">{{ publication.publish_id if publication else 'OK' }}</span>
+                </p>
+            </div>
+        </div>
+        <a href="#tiktokSection" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-1.5 rounded-lg transition-colors">
+            Ver Detalles
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Campaign Header Info -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 border border-slate-800 p-6 rounded-2xl backdrop-blur-sm">
+        <div class="space-y-1">
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">Campaña #{{ campaign.id }}</span>
+                <span class="text-xs text-slate-400 font-medium">Creada el {{ campaign.created_at.strftime('%d/%m/%Y a las %H:%M') }}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white">{{ campaign.company_name }}</h1>
+            <p class="text-xs text-slate-400">Rubro: <strong class="text-slate-200">{{ campaign.industry }}</strong></p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="px-3 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-2
+                {% if campaign.status == 'PUBLISHED' %}
+                    bg-emerald-500/20 text-emerald-300 border border-emerald-500/40
+                {% elif campaign.status == 'MEDIA_GENERATED' %}
+                    bg-cyan-500/20 text-cyan-300 border border-cyan-500/40
+                {% else %}
+                    bg-violet-500/20 text-violet-300 border border-violet-500/40
+                {% endif %}">
+                <i class="fa-solid fa-circle text-[8px] animate-pulse"></i>
+                {{ campaign.status }}
+            </span>
+            <a href="/campaigns/history" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors flex items-center gap-1.5">
+                <i class="fa-solid fa-list"></i> Historial
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content Layout (Left: Video Player / Right: Script & Details) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- Left Column: Vertical Video Player 9:16 (5 Cols) -->
+        <div class="lg:col-span-5 space-y-4">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col items-center">
+                <div class="w-full flex items-center justify-between mb-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-mobile-screen text-pink-400"></i> Video Vertical (9:16)
+                    </span>
+                    <span class="text-[11px] font-mono text-slate-500">720x1280 • 24fps</span>
+                </div>
+
+                <!-- Smartphone Mockup Wrapper -->
+                <div class="relative w-full max-w-[280px] sm:max-w-[300px] aspect-[9/16] rounded-[2.5rem] p-3 bg-gradient-to-b from-slate-800 via-slate-900 to-black shadow-2xl border-4 border-slate-700/80">
+                    <!-- Speaker notch -->
+                    <div class="absolute top-4 left-1/2 -translate-x-1/2 w-20 h-3 bg-slate-950 rounded-full z-20"></div>
+
+                    <!-- Inner Video Display -->
+                    <div class="w-full h-full rounded-[2rem] overflow-hidden bg-black relative flex items-center justify-center">
+                        {% if campaign.video_path %}
+                        <video id="campaignVideo" controls autoplay loop playsinline class="w-full h-full object-cover">
+                            <source src="{{ campaign.video_path | media_url }}" type="video/mp4">
+                            Tu navegador no soporta reproducción de video HTML5.
+                        </video>
+                        {% else %}
+                        <div class="text-center p-4 text-slate-500 text-xs">
+                            <i class="fa-solid fa-film text-3xl mb-2"></i>
+                            <p>Video aún no generado</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Video Actions -->
+                <div class="w-full mt-6 space-y-2">
+                    {% if campaign.video_path %}
+                    <a href="{{ campaign.video_path | media_url }}" download="campaña_{{ campaign.id }}_tiktok.mp4"
+                       class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors">
+                        <i class="fa-solid fa-download text-pink-400"></i> Descargar Archivo MP4
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Original Photo Preview -->
+            {% if campaign.original_photo_path %}
+            <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-4 flex items-center gap-4">
+                <img src="{{ campaign.original_photo_path | media_url }}" alt="Foto Original" class="w-16 h-16 object-cover rounded-xl border border-slate-700 shrink-0">
+                <div class="overflow-hidden">
+                    <span class="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Foto Original del Producto</span>
+                    <p class="text-xs text-slate-300 truncate font-mono">{{ campaign.original_photo_path.split('/')[-1] }}</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Almacenada en /app/media/uploads/</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Details, 3 Generated Photos & TikTok Publish (7 Cols) -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Selected Script Info Card -->
+            {% if selected_script %}
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-black px-2.5 py-0.5 rounded bg-pink-500/20 text-pink-400 border border-pink-500/30">
+                            Opción {{ selected_script.option_type }}
+                        </span>
+                        <h3 class="text-sm font-bold text-white">{{ selected_script.title }}</h3>
+                    </div>
+                    <span class="text-xs text-slate-400 font-medium">{{ selected_script.approach }}</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div class="space-y-1 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-pink-400 flex items-center gap-1">
+                            <i class="fa-solid fa-magnet"></i> Gancho Inicial (3s)
+                        </span>
+                        <p class="text-slate-200 italic">"{{ selected_script.hook }}"</p>
+                    </div>
+
+                    <div class="space-y-1 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+                            <i class="fa-solid fa-bullhorn"></i> Llamada a la Acción (CTA)
+                        </span>
+                        <p class="text-slate-200 font-semibold">{{ selected_script.cta }}</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1 pt-1">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-violet-400">Locución / Guion Completo:</span>
+                    <p class="text-xs text-slate-300 bg-slate-950/40 p-3 rounded-xl border border-slate-800/60 leading-relaxed">
+                        {{ selected_script.narration }}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 3 Generated Images Gallery (Google Imagen 3 / IA) -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-images text-cyan-400"></i> 3 Imágenes Generadas (Google Imagen 3 / IA)
+                        </h3>
+                        <p class="text-xs text-slate-400">Almacenadas en /app/media/generated_images/ con subtítulos superpuestos</p>
+                    </div>
+                    <span class="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">3 Fotos HD</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {% for img in generated_images %}
+                    <div class="group relative rounded-xl overflow-hidden border border-slate-700 bg-slate-950 flex flex-col">
+                        <div class="aspect-[9/16] overflow-hidden relative">
+                            <img src="{{ img.file_path | media_url }}" alt="Escena {{ img.scene_index }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-2 left-2 bg-black/70 text-white font-bold text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm">
+                                Escena {{ img.scene_index }}
+                            </span>
+                        </div>
+                        <div class="p-2.5 text-[10px] text-slate-400 border-t border-slate-800 bg-slate-950/90">
+                            <p class="truncate" title="{{ img.prompt }}">{{ img.prompt }}</p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-xs text-slate-500 col-span-3 text-center py-4">No se han registrado imágenes generadas aún.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TikTok Content Posting API v2 Card -->
+            <div id="tiktokSection" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4 relative overflow-hidden">
+                <div class="absolute -top-16 -right-16 w-48 h-48 bg-pink-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center border border-slate-700">
+                            <i class="fa-brands fa-tiktok text-pink-500 text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Despliegue en TikTok Content Posting API v2</h3>
+                            <p class="text-xs text-slate-400">Endpoint: https://open.tiktokapis.com/v2/post/publish/video/init/</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-bold px-2.5 py-0.5 rounded uppercase
+                        {% if settings.TIKTOK_SANDBOX_MODE %}bg-amber-500/10 text-amber-300 border border-amber-500/30{% else %}bg-emerald-500/10 text-emerald-300 border border-emerald-500/30{% endif %}">
+                        {{ "SANDBOX ACTIVO" if settings.TIKTOK_SANDBOX_MODE else "MODO PRODUCCIÓN" }}
+                    </span>
+                </div>
+
+                {% if publication %}
+                <!-- Publication Status Card -->
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-400">Estado de Publicación:</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+                            <i class="fa-solid fa-check"></i> {{ publication.status }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-400">Publish ID Oficial:</span>
+                        <span class="text-xs font-mono text-white bg-slate-900 px-2.5 py-1 rounded border border-slate-800">{{ publication.publish_id }}</span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-400">Fecha y Hora de Envío:</span>
+                        <span class="text-xs text-slate-300">{{ publication.published_at.strftime('%d/%m/%Y %H:%M:%S UTC') }}</span>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                        <span><i class="fa-solid fa-database text-violet-400 mr-1"></i> Persistido en PostgreSQL</span>
+                        <span class="text-slate-500">FILE_UPLOAD Completado</span>
+                    </div>
+                </div>
+
+                <!-- Republish Button if Needed -->
+                <form action="/campaigns/{{ campaign.id }}/publish/tiktok" method="POST" onsubmit="showPublishLoading()">
+                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 border border-slate-700 transition-colors">
+                        <i class="fa-solid fa-rotate-right"></i> Volver a Enviar a TikTok (Simulado / Live)
+                    </button>
+                </form>
+
+                {% else %}
+                <!-- Publish Action Button -->
+                <div class="space-y-3">
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        El video vertical <strong class="text-white">campaign_{{ campaign.id }}.mp4</strong> está listo para ser publicado mediante el flujo <code class="text-pink-400 bg-slate-950 px-1 py-0.5 rounded">FILE_UPLOAD</code> hacia TikTok v2.
+                    </p>
+
+                    <form action="/campaigns/{{ campaign.id }}/publish/tiktok" method="POST" onsubmit="showPublishLoading()">
+                        <button type="submit" class="w-full bg-gradient-to-r from-pink-600 via-rose-600 to-violet-600 hover:from-pink-500 hover:via-rose-500 hover:to-violet-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-pink-600/30 flex items-center justify-center gap-2.5 transition-all duration-300 group">
+                            <i class="fa-brands fa-tiktok text-lg group-hover:scale-110 transition-transform"></i>
+                            <span class="text-sm">Publicar Video en TikTok Content Posting API</span>
+                        </button>
+                    </form>
+
+                    <div class="text-[11px] text-slate-400 bg-slate-950/40 p-2.5 rounded-lg border border-slate-800/60 flex items-start gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-400 text-xs mt-0.5"></i>
+                        <span>
+                            <strong>Modo Respaldo:</strong> Con <code class="text-amber-300 font-mono">TIKTOK_SANDBOX_MODE=true</code>, cualquier falta de credenciales autorizadas simula el handshake devolviendo un <code class="text-slate-300 font-mono">publish_id</code> exitoso y persiste la publicación en PostgreSQL.
+                        </span>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function showPublishLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    const title = document.getElementById('loadingTitle');
+    const sub = document.getElementById('loadingSubtitle');
+    if (overlay && title && sub) {
+        title.innerText = 'Desplegando en TikTok API v2...';
+        sub.innerText = 'Iniciando POST /v2/post/publish/video/init/ y subiendo bytes de video MP4.';
+        overlay.classList.remove('hidden');
+    }
+}
+</script>
+{% endblock %}
+

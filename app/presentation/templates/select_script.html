@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Seleccionar Guion - {{ campaign.company_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8">
+
+    <!-- Stepper / Breadcrumb -->
+    <div class="flex items-center justify-center space-x-4 text-xs font-semibold">
+        <span class="flex items-center gap-1.5 text-emerald-400">
+            <i class="fa-solid fa-circle-check"></i> 1. Información & Fotografía
+        </span>
+        <i class="fa-solid fa-chevron-right text-slate-600 text-[10px]"></i>
+        <span class="flex items-center gap-1.5 text-violet-400 bg-violet-500/10 px-3 py-1 rounded-full border border-violet-500/20">
+            <i class="fa-solid fa-circle-dot"></i> 2. Selección de Guion IA
+        </span>
+        <i class="fa-solid fa-chevron-right text-slate-600 text-[10px]"></i>
+        <span class="flex items-center gap-1.5 text-slate-500">
+            <i class="fa-regular fa-circle"></i> 3. Video 9:16 & TikTok
+        </span>
+    </div>
+
+    <!-- Header Summary -->
+    <div class="text-center space-y-2">
+        <h1 class="text-2xl sm:text-4xl font-extrabold text-white">
+            Propuestas de Guiones con <span class="bg-gradient-to-r from-violet-400 to-pink-500 bg-clip-text text-transparent">Gemini 1.5 Flash</span>
+        </h1>
+        <p class="text-slate-400 text-sm max-w-2xl mx-auto">
+            Hemos analizado <strong class="text-white">{{ campaign.company_name }}</strong> en el rubro <span class="text-violet-300">{{ campaign.industry }}</span>. Revisa los 3 enfoques publicitarios y haz clic en el que mejor represente tu objetivo comercial.
+        </p>
+    </div>
+
+    <!-- 3 Script Proposal Cards Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {% for s in scripts %}
+        <div class="bg-slate-900/80 border rounded-2xl flex flex-col justify-between overflow-hidden shadow-xl transition-all duration-300 hover:scale-[1.01]
+            {% if s.option_type == 'A' %}
+                border-pink-500/40 hover:border-pink-500 hover:shadow-pink-500/10
+            {% elif s.option_type == 'B' %}
+                border-violet-500/40 hover:border-violet-500 hover:shadow-violet-500/10
+            {% else %}
+                border-amber-500/40 hover:border-amber-500 hover:shadow-amber-500/10
+            {% endif %}">
+            
+            <!-- Card Header -->
+            <div class="p-6 border-b border-slate-800/80 
+                {% if s.option_type == 'A' %}bg-gradient-to-br from-pink-500/10 to-transparent
+                {% elif s.option_type == 'B' %}bg-gradient-to-br from-violet-500/10 to-transparent
+                {% else %}bg-gradient-to-br from-amber-500/10 to-transparent{% endif %}">
+                
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-black px-2.5 py-1 rounded-md tracking-wider uppercase
+                        {% if s.option_type == 'A' %}bg-pink-500/20 text-pink-400 border border-pink-500/30
+                        {% elif s.option_type == 'B' %}bg-violet-500/20 text-violet-400 border border-violet-500/30
+                        {% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
+                        Opción {{ s.option_type }}
+                    </span>
+                    <span class="text-xs text-slate-400 font-semibold flex items-center gap-1">
+                        {% if s.option_type == 'A' %}<i class="fa-solid fa-fire text-pink-400"></i> Viral / Humor
+                        {% elif s.option_type == 'B' %}<i class="fa-solid fa-briefcase text-violet-400"></i> Profesional
+                        {% else %}<i class="fa-solid fa-bolt text-amber-400"></i> Urgencia / Flash{% endif %}
+                    </span>
+                </div>
+
+                <h3 class="font-bold text-lg text-white leading-snug">{{ s.title }}</h3>
+                <p class="text-xs text-slate-400 mt-1 font-medium">{{ s.approach }}</p>
+            </div>
+
+            <!-- Card Content Body -->
+            <div class="p-6 space-y-4 flex-1 text-sm">
+                
+                <!-- Hook -->
+                <div class="space-y-1">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-pink-400 flex items-center gap-1">
+                        <i class="fa-solid fa-magnet text-xs"></i> Gancho Inicial (Primeros 3 seg)
+                    </span>
+                    <p class="text-slate-200 bg-slate-950/70 p-3 rounded-xl border border-slate-800/80 italic text-xs leading-relaxed">
+                        "{{ s.hook }}"
+                    </p>
+                </div>
+
+                <!-- Narration / Script -->
+                <div class="space-y-1">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-violet-400 flex items-center gap-1">
+                        <i class="fa-solid fa-microphone-lines text-xs"></i> Locución / Voz en off
+                    </span>
+                    <p class="text-slate-300 text-xs leading-relaxed">
+                        {{ s.narration }}
+                    </p>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="space-y-1">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+                        <i class="fa-solid fa-bullhorn text-xs"></i> Llamada a la Acción (CTA)
+                    </span>
+                    <p class="text-slate-300 text-xs font-semibold">
+                        {{ s.cta }}
+                    </p>
+                </div>
+
+                <!-- Scene Subtitles Preview -->
+                <div class="space-y-2 pt-2 border-t border-slate-800/60">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Subtítulos superpuestos en Video (3 Escenas):
+                    </span>
+                    <div class="space-y-1 text-[11px]">
+                        {% for sub in s.scene_subtitles %}
+                        <div class="flex items-center gap-2 text-slate-300 bg-slate-950/40 px-2.5 py-1 rounded border border-slate-800/60">
+                            <span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[9px] font-bold text-slate-400">{{ loop.index }}</span>
+                            <span class="truncate">{{ sub }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Card Action Footer -->
+            <div class="p-6 pt-0">
+                <form action="/campaigns/{{ campaign.id }}/select-script" method="POST" onsubmit="showGenerationLoading()">
+                    <input type="hidden" name="script_id" value="{{ s.id }}">
+                    <button type="submit" class="w-full font-bold text-xs sm:text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all duration-200 shadow-md
+                        {% if s.option_type == 'A' %}
+                            bg-pink-600 hover:bg-pink-500 text-white shadow-pink-600/30
+                        {% elif s.option_type == 'B' %}
+                            bg-violet-600 hover:bg-violet-500 text-white shadow-violet-600/30
+                        {% else %}
+                            bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/30
+                        {% endif %}">
+                        <i class="fa-solid fa-clapperboard"></i>
+                        <span>Seleccionar Opción {{ s.option_type }} y Crear Video</span>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Back Navigation -->
+    <div class="text-center pt-4">
+        <a href="/" class="text-xs text-slate-500 hover:text-slate-300 transition-colors inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left"></i> Volver a ingresar datos y foto
+        </a>
+    </div>
+
+</div>
+
+<script>
+function showGenerationLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.remove('hidden');
+
+    // Simulate animated step progress
+    setTimeout(() => {
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        if (step1 && step2) {
+            step1.className = 'flex items-center text-emerald-400';
+            step1.innerHTML = '<i class="fa-solid fa-circle-check mr-2"></i> 1. Imágenes generadas en Pollinations.ai';
+            step2.className = 'flex items-center text-violet-400';
+            step2.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> 2. Superponiendo subtítulos del guion';
+        }
+    }, 4500);
+
+    setTimeout(() => {
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        if (step2 && step3) {
+            step2.className = 'flex items-center text-emerald-400';
+            step2.innerHTML = '<i class="fa-solid fa-circle-check mr-2"></i> 2. Subtítulos superpuestos';
+            step3.className = 'flex items-center text-pink-400';
+            step3.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> 3. Compilando video MP4 vertical con MoviePy...';
+        }
+    }, 8000);
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Marketing Automatizado con IA & TikTok{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                        },
+                        tiktok: {
+                            cyan: '#00f2fe',
+                            pink: '#fe0979',
+                            dark: '#010101'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="min-h-full flex flex-col font-['Plus_Jakarta_Sans',sans-serif] bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.15),rgba(255,255,255,0))]">
+    
+    <!-- Top Navigation -->
+    <header class="sticky top-0 z-40 backdrop-blur-md bg-slate-950/80 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand / Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="/" class="flex items-center space-x-3 group">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-fuchsia-600 to-pink-500 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-wand-magic-sparkles text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                                MarketAI <span class="text-pink-500 text-xs px-2 py-0.5 rounded-full bg-pink-500/10 border border-pink-500/20 ml-1">TikTok v2</span>
+                            </span>
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Gemini Flash + MoviePy + Pollinations</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="flex items-center space-x-1 sm:space-x-4">
+                    <a href="/" class="px-3 py-2 rounded-lg text-sm font-medium hover:text-white text-slate-300 hover:bg-slate-800/60 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-violet-400"></i>
+                        <span>Nueva Campaña</span>
+                    </a>
+                    <a href="/campaigns/history" class="px-3 py-2 rounded-lg text-sm font-medium hover:text-white text-slate-300 hover:bg-slate-800/60 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-photo-film text-pink-400"></i>
+                        <span>Historial</span>
+                    </a>
+                    <a href="/auth/tiktok/login" title="Conectar TikTok OAuth 2.0" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 border border-slate-700 hover:border-pink-500/50 hover:bg-slate-800 transition-all flex items-center gap-1.5 text-slate-300">
+                        <i class="fa-brands fa-tiktok text-pink-500"></i>
+                        <span class="hidden md:inline">OAuth TikTok</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Block -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Fullscreen Loading Spinner Overlay for Video Compilation -->
+    <div id="loadingOverlay" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-6 text-center">
+        <div class="relative w-24 h-24 mb-6">
+            <div class="absolute inset-0 rounded-full border-4 border-violet-500/20 animate-ping"></div>
+            <div class="w-24 h-24 rounded-full border-4 border-t-pink-500 border-r-violet-500 border-b-cyan-400 border-l-transparent animate-spin"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fa-solid fa-clapperboard text-2xl text-white animate-pulse"></i>
+            </div>
+        </div>
+        <h3 id="loadingTitle" class="text-2xl font-bold text-white mb-2">Generando Campaña Multimedia...</h3>
+        <p id="loadingSubtitle" class="text-slate-400 max-w-md text-sm mb-6">Estamos descargando 3 imágenes desde Pollinations.ai y renderizando el video vertical 9:16 con MoviePy.</p>
+        
+        <!-- Animated Progress Steps -->
+        <div class="w-full max-w-md bg-slate-900/80 rounded-xl p-4 border border-slate-800 text-left space-y-2.5 text-xs">
+            <div id="step1" class="flex items-center text-violet-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> 1. Generando 3 imágenes en Pollinations.ai</div>
+            <div id="step2" class="flex items-center text-slate-500"><i class="fa-regular fa-circle mr-2"></i> 2. Superponiendo subtítulos del guion</div>
+            <div id="step3" class="flex items-center text-slate-500"><i class="fa-regular fa-circle mr-2"></i> 3. Compilando video MP4 vertical (720x1280, 24fps)</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950/60 py-6 text-xs text-slate-500 text-center">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>Laboratorio 5 - Pregunta 2: Marketing Automatizado con IA & TikTok v2</p>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-microchip text-violet-400"></i> Gemini 1.5 Flash</span>
+                <span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-palette text-cyan-400"></i> Pollinations.ai</span>
+                <span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-video text-amber-400"></i> MoviePy / FFmpeg</span>
+                <span class="inline-flex items-center gap-1.5"><i class="fa-brands fa-tiktok text-pink-400"></i> Content Posting v2</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
+

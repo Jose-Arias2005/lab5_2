@@ -1,0 +1,52 @@
+# Variables de entorno y credenciales sensibles (¡Nunca commitear claves!)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Entornos virtuales de Python
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Caches y compilados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Archivos multimedia generados localmente (manteniendo la estructura mediante .gitkeep)
+app/media/uploads/*
+app/media/generated_images/*
+app/media/videos/*
+!app/media/uploads/.gitkeep
+!app/media/generated_images/.gitkeep
+!app/media/videos/.gitkeep
+
+# Bases de datos locales de respaldo / temporales
+*.db
+*.sqlite3
+fallback_marketing.db
+
+# Configuración de editores y sistemas operativos
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Logs de depuración
+*.log
+

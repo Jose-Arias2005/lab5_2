@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Campaña - Marketing Automatizado con IA & TikTok{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-10">
+
+    <!-- Hero Title -->
+    <div class="text-center space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-bolt"></i> Generación Multimedia Automatizada
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+            Marketing para Empresas con <span class="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-500 bg-clip-text text-transparent">IA & TikTok</span>
+        </h1>
+        <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+            Sube la fotografía de tu producto, la IA económica de <strong class="text-slate-200">Gemini 1.5 Flash</strong> propondrá 3 guiones publicitarios, generará 3 imágenes en alta definición con <strong class="text-slate-200">Pollinations.ai</strong> y compilará un video vertical en <strong class="text-slate-200">MoviePy</strong> listo para TikTok.
+        </p>
+    </div>
+
+    <!-- Main Creation Form Card -->
+    <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-pink-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <form action="/campaigns/create" method="POST" enctype="multipart/form-data" id="campaignForm" class="space-y-6 relative">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Company Name -->
+                <div class="space-y-2">
+                    <label for="company_name" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                        <i class="fa-solid fa-building text-violet-400 mr-1.5"></i> Nombre de la Empresa o Marca
+                    </label>
+                    <input type="text" id="company_name" name="company_name" required placeholder="Ej: Burger House Gourmet, ZenFit Studio"
+                           class="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all">
+                </div>
+
+                <!-- Industry / Rubro -->
+                <div class="space-y-2">
+                    <label for="industry" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                        <i class="fa-solid fa-tags text-pink-400 mr-1.5"></i> Rubro o Industria
+                    </label>
+                    <input type="text" id="industry" name="industry" required placeholder="Ej: Gastronomía, Ropa deportiva, Barbería"
+                           class="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all">
+                </div>
+            </div>
+
+            <!-- Quick Suggestions Tags -->
+            <div class="flex flex-wrap items-center gap-2 pt-1">
+                <span class="text-xs text-slate-400 font-medium">Sugerencias rápidas:</span>
+                <button type="button" onclick="setIndustry('Gastronomía Artesanal')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition-colors">Gastronomía</button>
+                <button type="button" onclick="setIndustry('Moda y Calzado')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition-colors">Moda</button>
+                <button type="button" onclick="setIndustry('Fitness y Gimnasios')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition-colors">Fitness</button>
+                <button type="button" onclick="setIndustry('Tecnología y Gadgets')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition-colors">Tecnología</button>
+                <button type="button" onclick="setIndustry('Servicios Inmobiliarios')" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 transition-colors">Inmobiliaria</button>
+            </div>
+
+            <!-- Photo Upload Area -->
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <i class="fa-solid fa-camera text-cyan-400 mr-1.5"></i> Fotografía del Producto o Negocio (Almacenamiento en /app/media/uploads/)
+                </label>
+                
+                <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-violet-500/70 rounded-2xl p-6 text-center cursor-pointer bg-slate-950/60 hover:bg-slate-950 transition-all group">
+                    <input type="file" id="photo" name="photo" accept="image/*" required class="hidden" onchange="previewSelectedImage(event)">
+                    
+                    <div id="dropPrompt" class="space-y-3">
+                        <div class="w-14 h-14 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-violet-400 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-200">Haz clic para subir o arrastra la imagen aquí</p>
+                            <p class="text-xs text-slate-500 mt-1">Formatos soportados: JPG, PNG, WEBP (Hasta 15MB)</p>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview Container -->
+                    <div id="previewContainer" class="hidden flex flex-col items-center">
+                        <div class="relative max-w-xs rounded-xl overflow-hidden shadow-lg border border-slate-700">
+                            <img id="imagePreview" src="#" alt="Vista previa" class="w-full h-48 object-cover">
+                            <button type="button" onclick="clearImagePreview(event)" class="absolute top-2 right-2 bg-slate-950/80 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs transition-colors">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <p id="fileName" class="text-xs text-slate-400 mt-2 font-mono"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2">
+                <button type="submit" id="btnSubmit" class="w-full bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 hover:from-violet-500 hover:via-fuchsia-500 hover:to-pink-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-violet-600/30 hover:shadow-violet-600/50 flex items-center justify-center gap-3 transition-all duration-300 group">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg group-hover:rotate-12 transition-transform"></i>
+                    <span class="text-base tracking-wide">Analizar con Gemini 1.5 Flash y Generar 3 Guiones</span>
+                    <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Feature Grid Overview -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+        <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 shrink-0">
+                <i class="fa-solid fa-feather-pointed"></i>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider">3 Enfoques de Guion</h4>
+                <p class="text-xs text-slate-400 mt-1">Viral con humor, Profesional de valor o Promocional con urgencia.</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 shrink-0">
+                <i class="fa-solid fa-film"></i>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider">Video Vertical 9:16</h4>
+                <p class="text-xs text-slate-400 mt-1">Compilado a 24fps con MoviePy uniendo 3 imágenes con subtítulos dinámicos.</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+                <i class="fa-brands fa-tiktok"></i>
+            </div>
+            <div>
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider">TikTok Content API v2</h4>
+                <p class="text-xs text-slate-400 mt-1">OAuth 2.0 y FILE_UPLOAD nativo con Sandbox Mode de respaldo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Campaigns Section -->
+    {% if recent_campaigns %}
+    <div class="space-y-4 pt-6">
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-violet-400"></i> Campañas Recientes
+            </h3>
+            <a href="/campaigns/history" class="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1 font-medium">
+                Ver todas <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% for c in recent_campaigns %}
+            <div class="bg-slate-900/50 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-colors flex flex-col justify-between">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 border border-violet-500/20">#{{ c.id }}</span>
+                        <span class="text-[10px] font-semibold text-slate-500">{{ c.created_at.strftime('%d/%m/%Y') }}</span>
+                    </div>
+                    <h4 class="font-bold text-sm text-white truncate">{{ c.company_name }}</h4>
+                    <p class="text-xs text-slate-400 truncate">{{ c.industry }}</p>
+                </div>
+                
+                <div class="pt-4 mt-2 border-t border-slate-800/80 flex items-center justify-between">
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded 
+                        {% if c.status == 'PUBLISHED' %}bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+                        {% elif c.status == 'MEDIA_GENERATED' %}bg-cyan-500/10 text-cyan-400 border border-cyan-500/20
+                        {% else %}bg-amber-500/10 text-amber-400 border border-amber-500/20{% endif %}">
+                        {{ c.status }}
+                    </span>
+                    <a href="{% if c.status == 'CREATED' or c.status == 'SCRIPTS_GENERATED' %}/campaigns/{{ c.id }}/select-script{% else %}/campaigns/{{ c.id }}/view{% endif %}"
+                       class="text-xs text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1">
+                        Ver <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+function setIndustry(val) {
+    document.getElementById('industry').value = val;
+}
+</script>
+{% endblock %}
+
